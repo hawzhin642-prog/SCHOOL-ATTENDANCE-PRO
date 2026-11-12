@@ -1,0 +1,36 @@
+
+name: Build School Attendance Pro APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Extract project ZIP
+        run: |
+          unzip -o school-attendance-pro_source.zip -d project
+          find project -name gradlew -type f
+
+      - name: Build APK
+        run: |
+          cd project
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: School-Attendance-Pro-APK
+          path: project/**/build/outputs/apk/debug/*.apk
